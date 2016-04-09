@@ -7,4 +7,4 @@ Parser para XML escrito a mão inteiramente em Lua apenas para aprendizagem.
 * Não libera erros caso os objetos não sejam devidamente finalizados.
 
 ### Performance
-Para tratar os arquivos possui uma performance excelente, entretanto devido a precária implementação de objetos em Lua a instanciação de cada classe é muito custosa e acaba abalando a performance.
+Devido a precária implementação de classes em Lua a instanciação é muito custosa e acaba abalando a performance.
