@@ -17,53 +17,38 @@ function Parser:peek(i)
     return self.stack[self.index + i] 
 end
 
-function Parser:skip(i)
-    self.index = self.index + i
-end
-
 function Parser:parseNode()
     local currentNode = {}
     currentNode.Attributes = {}
     currentNode.ChildNodes = {}
     
     while true do
-        if not self:peek() then return nil end
-        
-        if self:peek().Type == Tokens.Label then
-            if self:peek(-1).Type == Tokens.Less then
-                currentNode.Tag = self:peek().Value
-            elseif self:peek(-1).Type == Tokens.Label or self:peek(-1).Type == Tokens.String then
-                if self:peek(1).Type == Tokens.Equal and self:peek(2).Type == Tokens.String then
-                    currentNode.Attributes[self:peek().Value] = self:peek(2).Value
-                    self:skip(1)
+        local token = self:peek()
+
+        if not token then return nil end
+
+        if token[1] == Tokens.Label then
+            if self:peek(-1)[1] == Tokens.Less then
+                currentNode.Tag = token[2]
+            elseif self:peek(-1)[1] == Tokens.Label or self:peek(-1)[1] == Tokens.String then
+                if self:peek(1)[1] == Tokens.Equal and self:peek(2)[1] == Tokens.String then
+                    currentNode.Attributes[self:peek()[2]] = self:peek(2)[2]
+                    self.index = self.index + 1
                 end
             end
-        elseif self:peek().Type == Tokens.Greater then
-            if self:peek(1).Type == Tokens.InnerText then
-                currentNode.InnerText = self:peek(1).Value
-            end
-        elseif self:peek().Type == Tokens.Less and self:peek(1).Type == Tokens.Slash then
-            return currentNode   
-        elseif self:peek().Type == Tokens.Less and self:peek(1).Type == Tokens.Label then
-            self:skip(1)
+        elseif self:peek()[1] == Tokens.InnerText then
+            currentNode.InnerText = self:peek()[2]:match('^%s+(.-)%s+$')
+        elseif self:peek()[1] == Tokens.Less and self:peek(1)[1] == Tokens.Slash then
+            return currentNode
+        elseif self:peek()[1] == Tokens.Less and self:peek(1)[1] == Tokens.Label then
+            self.index = self.index + 1
             local child = self:parseNode()
             table.insert(currentNode.ChildNodes, child)
-        elseif self:peek().Type == Tokens.Slash and (self:peek(-1).Type == Tokens.String or self:peek(-1).Type == Tokens.Label) then
-            return currentNode 
+        elseif self:peek()[1] == Tokens.Slash then
+            return currentNode
         end
-        self:skip(1)
+        self.index = self.index + 1
     end
 end
 
-local file = io.open('./books.xml', 'r')
-local xml = file:read('*a')
-file:close()
-
-local st = os.clock()
-local doc
-for i = 0, 10000 do
-    doc = Parser:new(xml)
-end
-print(os.clock() - st)
-
---return Parser
+return Parser

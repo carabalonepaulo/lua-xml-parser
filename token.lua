@@ -14,14 +14,4 @@ local Tokens = {
 	EOF = 13
 }
 
-function Token(si, ei, constv, value)
-	return setmetatable({ StartIndex = si, EndIndex = ei, Type = constv, Value = value }, {
-		__tostring = function (t)
-			for k, v in pairs(Tokens) do
-				if v == t.Type then return k end
-			end
-		end
-	})
-end
-
 return Tokens

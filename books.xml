@@ -1,6 +1,0 @@
-<livros count="2">
-    <livro author="Segundo Autor" title="Segundo livro" date="25/08/1997" />
-    <livro author="Terceiro Autor" title='Terceiro livro' date='02/02/2002'>
-        Algum comentario sobre o livro
-    </livro>
-</livros>
